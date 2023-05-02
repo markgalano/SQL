@@ -1,0 +1,37 @@
+--created a data table for my clothing store
+CREATE TABLE shirts (id INTEGER PRIMARY KEY, name TEXT, color TEXT, size TEXT,quantity INTEGER, price INTEGER);
+
+INSERT INTO shirts VALUES
+
+(1, "cool shirt", "blue", "LG", 5, 12),
+(2, "cool shirt", "blue", "SM", 6, 12),
+(3, "cool shirt", "blue", "MD", 8, 12),
+(4, "cool shirt", "blue", "XL", 8, 12),
+(5, "cool shirt", "blue", "XS", 10, 12),
+
+(6, "ugly shirt", "white", "XS", 10, 15),
+(7, "ugly shirt", "white", "SM", 3, 15),
+(8, "ugly shirt", "white", "MD", 4, 15),
+(9, "ugly shirt", "white", "LG", 9, 15),
+(10, "ugly shirt", "white", "XL", 4, 15),
+
+(11, "cute shirt", "black", "XS", 1, 10),
+(12, "cute shirt", "black", "SM", 3, 10),
+(13, "cute shirt", "black", "MD", 4, 10),
+(14, "cute shirt", "black", "LG", 7, 10),
+(15, "cute shirt", "black", "XL", 9, 10);
+
+
+--displayed the data table ordered by price (low to high).
+SELECT * FROM shirts
+ORDER BY price asc;
+
+--how much shirts are in the inventory?
+SELECT SUM(quantity) 
+FROM shirts;
+
+--which shirts are the most popular top 5?
+SELECT name, color, size, quantity
+FROM shirts
+ORDER BY quantity asc
+LIMIT 5;
