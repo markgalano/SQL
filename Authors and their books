@@ -48,7 +48,7 @@ VALUES
 ("J.R.R. Tolkien", "The Lord of the Rings", "1954-07-29", "Fantasy", "English"),
 ("Ernest Hemingway", "The Old Man and the Sea", "1952-09-01", "Novella", "English");
 
-/* Question: Authors: Which of the books did the author's write?*/
+--Question: Authors: Which of the books did the author's write?*/
 
 SELECT authors.author_name, book_details.book_title
     FROM authors
