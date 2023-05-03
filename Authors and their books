@@ -1,0 +1,56 @@
+/* a sample data set about famous authors and famous books*/
+
+CREATE TABLE authors (
+  author_id INTEGER PRIMARY KEY,
+  author_name TEXT,
+  author_age INTEGER,
+  author_gender TEXT,
+  author_nationality TEXT
+);
+
+INSERT INTO authors (author_name, author_age, author_gender, author_nationality)
+VALUES ("Jane Austen", 41, "Female", "British");
+INSERT INTO authors (author_name, author_age, author_gender, author_nationality)
+VALUES ("William Shakespeare", 52, "Male", "English");
+INSERT INTO authors (author_name, author_age, author_gender, author_nationality)
+VALUES ("J.K. Rowling", 56, "Female", "British");
+INSERT INTO authors (author_name, author_age, author_gender, author_nationality)
+VALUES ("Harper Lee", 89, "Female", "American");
+INSERT INTO authors (author_name, author_age, author_gender, author_nationality)
+VALUES ("George Orwell", 46, "Male", "British");
+INSERT INTO authors (author_name, author_age, author_gender, author_nationality)
+VALUES ("F. Scott Fitzgerald", 44, "Male", "American");
+INSERT INTO authors (author_name, author_age, author_gender, author_nationality)
+VALUES ("Charles Dickens", 58, "Male", "British");
+INSERT INTO authors (author_name, author_age, author_gender, author_nationality)
+VALUES ("Mark Twain", 74, "Male", "American");
+INSERT INTO authors (author_name, author_age, author_gender, author_nationality)
+VALUES ("Ernest Hemingway", 61, "Male", "American");
+
+CREATE TABLE book_details (
+  author_name TEXT,
+  book_title TEXT,
+  publication_date INTEGER,
+  genre TEXT,
+  language TEXT
+);
+
+INSERT INTO book_details (author_name, book_title, publication_date, genre, language)
+VALUES 
+("Jane Austen", "Pride and Prejudice", "1813-01-28", "Romance", "English"),
+("William Shakespeare", "Hamlet", "1603-01-01", "Tragedy", "English"),
+("J.K. Rowling", "Harry Potter and the Philosopher's Stone", "1997-06-26", "Fantasy", "English"),
+("Harper Lee", "To Kill a Mockingbird", "1960-07-11", "Bildungsroman", "English"),
+("George Orwell", "Nineteen Eighty-Four", "1949-06-08", "Dystopian", "English"),
+("F. Scott Fitzgerald", "The Great Gatsby", "1925-04-10", "Tragedy", "English"),
+("Charles Dickens", "Oliver Twist", "1838-02-05", "Novel", "English"),
+("Mark Twain", "The Adventures of Tom Sawyer", "1876-12-10", "Bildungsroman", "English"),
+("J.R.R. Tolkien", "The Lord of the Rings", "1954-07-29", "Fantasy", "English"),
+("Ernest Hemingway", "The Old Man and the Sea", "1952-09-01", "Novella", "English");
+
+/* Question: Authors: Which of the books did the author's write?*/
+
+SELECT authors.author_name, book_details.book_title
+    FROM authors
+    LEFT OUTER JOIN book_details
+    ON authors.author_name=book_details.author_name;
