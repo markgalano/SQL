@@ -96,3 +96,21 @@ ORDER by avg_safety asc
 SELECT street, avg_safety, 'Safe Lane' as Label
 FROM safest_lanes
 WHERE avg_safety >4;
+
+
+#Here I demonstrate windows function
+
+--a list of all the bike lanes, both safety ratings for each lane, the average safety rating for each lane, and a label with the recommendation as "Remove", "Leave As-Is", or "Improvements Needed".
+    --Bike lanes with an average safety rating of 4 or more should be labeled "Leave As-Is".
+    --Bike lanes with an average safety rating of less than 2.5 should be labeled as "Remove".
+    --All other bike lanes should be labeled as "Improvements Needed".
+
+
+SELECT street, safetyrating, AVG(safetyrating) OVER (PARTITION by street) as average_rating,
+ CASE
+    WHEN AVG(safetyrating) OVER (PARTITION by street) >=4 THEN 'Leave As-Is'
+    WHEN AVG(safetyrating) OVER (PARTITION by street) <2.5 THEN 'Remove'
+    ELSE 'Improvements Needed'
+    END AS 'Recommendation'
+FROM Citybikelanes
+ORDER BY average_rating;
