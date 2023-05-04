@@ -1,0 +1,49 @@
+#For this project, I downloaded Spotify data from Kaggle.
+  --source:https://www.kaggle.com/datasets/equinxx/spotify-top-50-songs-in-2021?select=spotify_top50_2021.csv
+
+#Then I created a table to insert Spotify data into using SQLite.
+  
+CREATE TABLE BIT_DB.Spotifydata
+(
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness text NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL
+)
+
+#Finally, I performed analytics on the data using SQLite RDBMS. 
+
+/*Questions*/
+
+--What's the danceability for the 10 most popular songs?
+SELECT artist_name, track_name, popularity, danceability
+FROM BIT_DB.Spotifydata
+  GROUP BY artist_name, track_name
+  ORDER BY popularity desc
+  LIMIT 10;
+
+--Who are the top 10 artists based on popularity? 
+SELECT artist_name, popularity
+FROM BIT_DB.Spotifydata
+  GROUP BY artist_name, popularity
+  ORDER BY popularity desc
+  LIMIT 10;
+
+--What artist released the longest song? 
+
+SELECT artist_name, track_name, MAX(duration_ms)
+FROM BIT_DB.Spotifydata;
