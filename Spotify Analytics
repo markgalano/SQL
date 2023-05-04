@@ -44,6 +44,24 @@ FROM BIT_DB.Spotifydata
   LIMIT 10;
 
 --What artist released the longest song? 
-
 SELECT artist_name, track_name, MAX(duration_ms)
 FROM BIT_DB.Spotifydata;
+
+/*CTE Sample*/
+
+--Pt.1 Calculate the average popularity for the artists in the Spotify data table. 
+SELECT artist_name, AVG(popularity) as average_popularity
+FROM Spotifydata
+GROUP BY artist_name;  
+
+--Pt. 2 Then, for every artist with an average popularity of 90 or above, show their name, their average popularity, and label them as a “Top Star”.
+WITH Popularity_AVG AS
+(
+SELECT s.artist_name, AVG(s.popularity) AS average_popularity
+FROM Spotifydata s
+GROUP BY s.artist_name  
+)
+
+SELECT artist_name, average_popularity, 'Top Star' AS tag
+FROM Popularity_AVG
+WHERE average_popularity >=90;
