@@ -1,0 +1,107 @@
+/*SQL Murder Mystery by The Northwestern University Knight Lab*/
+
+--PROMPT: A crime has taken place and the detective needs your help. The detective gave you the crime scene report, but you somehow lost it. You vaguely remember that the crime was a murder that occurred sometime on Jan.15, 2018 and that it took place in SQL City. 
+
+--Start by retrieving the corresponding crime scene report from the police department’s database.
+
+SELECT date, type, description, city
+FROM crime_scene_report
+    WHERE city LIKE '%SQL City'
+    AND type LIKE '%murder'
+    AND date = 20180115;
+
+--Next Clue: Security footage shows that there were 2 witnesses. The first witness lives at the last house on "Northwestern Dr". The second witness, named Annabel, lives somewhere on "Franklin Ave".
+
+SELECT id, name, MAX(address_number), address_street_name
+FROM person
+    WHERE address_street_name LIKE 'Northwestern Dr';
+
+SELECT id, name, address_number, address_street_name
+FROM person
+    WHERE address_street_name LIKE 'Franklin Ave'
+    AND name LIKE '%Annabel%';
+
+WITH 'witness_1' AS
+    (
+    SELECT id, name, MAX(address_number), address_street_name
+    FROM person
+    WHERE address_street_name LIKE 'Northwestern Dr'
+    )
+    ,'witness_2' AS
+    (
+    SELECT id, name, address_number, address_street_name
+    FROM person
+    WHERE address_street_name LIKE 'Franklin Ave'
+    AND name LIKE '%Annabel%'
+    )
+    , witnesses AS 
+    (
+    SELECT *, 1 AS witness FROM witness_1
+    UNION
+    SELECT *, 2 AS witness FROM witness_2
+    )
+SELECT witness, transcript 
+FROM witnesses
+LEFT JOIN interview ON witnesses.id = interview.person_id;
+
+--Next clue: 
+    --Witness 1: "I heard a gunshot and then saw a man run out. He had a "Get Fit Now Gym" bag. The membership number on the                     bag started with "48Z". Only gold members have those bags. The man got into a car with a plate that included "H42W".
+    --Witness 2: I saw the murder happen, and I recognized the killer from my gym when I was working out last week on January the 9th.
+
+WITH gym_checkins AS 
+    (
+    SELECT person_id, info.id, info.name, info.membership_status
+   FROM get_fit_now_member info
+        LEFT JOIN get_fit_now_check_in login
+        ON info.id = login.membership_id
+        WHERE info.id LIKE '48Z%'
+        AND info.membership_status = 'gold'
+        AND check_in_date = '20180109'
+    ), suspects AS 
+    (
+    SELECT gym_checkins.person_id, gym_checkins.name, plate_number, gender
+    FROM gym_checkins
+        LEFT JOIN person ON gym_checkins.person_id = person.id
+        LEFT JOIN drivers_license ON person.license_id = drivers_license.id
+    )
+SELECT * 
+FROM suspects
+    WHERE plate_number LIKE '%H42W%' 
+    AND gender = 'male';
+
+--Main Suspect: Jeremy Bowers
+
+SELECT person.name, interview.transcript
+FROM interview
+    LEFT JOIN person
+    ON interview.person_id=person.id
+    WHERE person.name LIKE 'Jeremy Bowers';
+    
+--Jeremy's interview: I was hired by a woman with a lot of money. I don't know her name but I know she's around 5'5" (65") or 5'7" (67"). She has red hair and she drives a Tesla Model S. I know that she attended the SQL Symphony Concert 3 times in December 2017.
+
+WITH tesla_drivers AS 
+    (
+    SELECT id AS license_id
+    FROM drivers_license
+         WHERE gender = 'female' AND hair_color = 'red' 
+         AND car_make = 'Tesla' AND car_model = 'Model S' 
+         AND height >= 64 AND height <= 68 
+     ), rich_suspects AS (
+    SELECT person.id AS person_id, name, annual_income
+    FROM tesla_drivers AS td
+    LEFT JOIN person ON td.license_id = person.license_id
+    LEFT JOIN income ON person.ssn = income.ssn
+    ), symphony_attenders AS 
+    (
+    SELECT person_id, COUNT(1) AS n_checkins
+    FROM facebook_event_checkin
+    WHERE event_name = 'SQL Symphony Concert' 
+    AND `date` LIKE '%201712%' 
+    GROUP BY person_id
+    HAVING n_checkins = 3 
+    )
+SELECT name, annual_income
+FROM rich_suspects
+    INNER JOIN symphony_attenders ON rich_suspects.person_id = symphony_attenders.person_id
+
+--Final suspect: Miranda Priestly
